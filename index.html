@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Braço Livre — Aprenda Guitarra</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="theme-color" content="#2B1B12">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --wood-dark:#2B1B12;
+  --wood:#3D2817;
+  --wood-light:#5A3D26;
+  --cream:#F3E9D8;
+  --gold:#D4A24C;
+  --gold-dim:#8A6B3A;
+  --e-low:#C0392B;
+  --a:#E67E22;
+  --d:#F1C40F;
+  --g:#27AE60;
+  --b:#2E86AB;
+  --e-high:#8E44AD;
+  --ok:#4CAF6D;
+  --bad:#D65A5A;
+  font-family:'Inter',system-ui,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0;
+  background:var(--wood-dark);
+  color:var(--cream);
+  min-height:100%;
+}
+h1,h2,h3{font-family:'Fraunces',serif;font-weight:700;margin:0 0 .3em;}
+p{line-height:1.5;}
+
+/* ---------- Header / nav ---------- */
+header.top{
+  position:sticky;top:0;top:env(safe-area-inset-top,0px);z-index:20;
+  padding:.9rem 1.1rem calc(.9rem + env(safe-area-inset-top,0px));
+  background:linear-gradient(180deg,var(--wood-dark) 70%,transparent);
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid rgba(212,162,76,.25);
+}
+header.top .logo{display:flex;align-items:center;gap:.6rem;}
+header.top .logo svg{width:28px;height:28px;flex-shrink:0;}
+header.top h1{font-size:1.25rem;color:var(--gold);letter-spacing:.01em;}
+
+nav.tabs{
+  display:flex;gap:.4rem;overflow-x:auto;padding:.6rem 1.1rem 1rem;
+  scrollbar-width:none;
+}
+nav.tabs::-webkit-scrollbar{display:none;}
+nav.tabs button{
+  flex:0 0 auto;
+  background:var(--wood);
+  border:1px solid rgba(212,162,76,.2);
+  color:var(--cream);
+  padding:.5rem 1rem;
+  border-radius:999px;
+  font-size:.88rem;
+  font-weight:600;
+  cursor:pointer;
+  transition:background .15s, color .15s, border-color .15s;
+  white-space:nowrap;
+}
+nav.tabs button.active{background:var(--gold);color:var(--wood-dark);border-color:var(--gold);}
+
+main{max-width:720px;margin:0 auto;padding:0 1.1rem 3rem;}
+section.view{display:none;}
+section.view.active{display:block;animation:fade .25s ease;}
+@keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+/* ---------- Cards ---------- */
+.card{
+  background:var(--wood);
+  border:1px solid rgba(212,162,76,.18);
+  border-radius:14px;
+  padding:1.1rem 1.2rem;
+  margin:1rem 0;
+}
+.card h3{color:var(--gold);font-size:1.05rem;}
+.muted{color:#C9B79A;font-size:.9rem;}
+
+/* ---------- Tuner ---------- */
+.tuner-dial{
+  display:flex;flex-direction:column;align-items:center;gap:.8rem;
+  padding:1.4rem 0 .6rem;
+}
+.note-display{
+  font-family:'Fraunces',serif;
+  font-size:4.2rem;
+  font-weight:700;
+  line-height:1;
+  color:var(--gold);
+  min-height:4.6rem;
+  display:flex;align-items:center;gap:.4rem;
+}
+.note-display .oct{font-size:1.4rem;color:#C9B79A;align-self:flex-end;margin-bottom:.6rem;}
+.meter{
+  width:100%;max-width:340px;height:64px;position:relative;
+  background:var(--wood-dark);
+  border-radius:10px;
+  border:1px solid rgba(212,162,76,.2);
+  overflow:hidden;
+}
+.meter .center-line{
+  position:absolute;left:50%;top:0;bottom:0;width:2px;background:rgba(212,162,76,.5);transform:translateX(-1px);
+}
+.meter .tick{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.08);}
+.meter .needle{
+  position:absolute;top:6px;bottom:6px;width:8px;border-radius:4px;
+  left:50%;transform:translateX(-50%);
+  background:var(--bad);
+  transition:left .08s linear, background .12s linear;
+}
+.meter .needle.ok{background:var(--ok);}
+.cents-label{font-size:.85rem;color:#C9B79A;min-height:1.2em;}
+.tuner-btn{
+  margin-top:.4rem;
+  background:var(--gold);color:var(--wood-dark);border:none;
+  font-weight:700;font-size:1rem;
+  padding:.75rem 1.6rem;border-radius:999px;cursor:pointer;
+}
+.tuner-btn.listening{background:var(--bad);color:#fff;}
+.string-row{display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;margin-top:1rem;}
+.string-chip{
+  width:44px;height:44px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:.95rem;color:#fff;
+  border:2px solid transparent;
+}
+.string-chip.active{border-color:var(--cream);transform:scale(1.12);}
+
+/* ---------- Fretboard diagram (SVG) ---------- */
+.fret-wrap{overflow-x:auto;padding:.4rem 0;}
+svg.fretboard{display:block;margin:0 auto;}
+
+/* ---------- Lesson list ---------- */
+.lesson{
+  display:flex;align-items:flex-start;gap:.8rem;
+  padding:.9rem 0;border-bottom:1px solid rgba(212,162,76,.12);
+}
+.lesson:last-child{border-bottom:none;}
+.lesson .num{
+  flex:0 0 auto;width:30px;height:30px;border-radius:50%;
+  background:var(--gold-dim);color:var(--wood-dark);
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;
+}
+.lesson .body strong{display:block;margin-bottom:.15rem;}
+.level-pill{
+  display:inline-block;font-size:.72rem;font-weight:700;
+  padding:.15rem .6rem;border-radius:999px;margin-bottom:.7rem;
+  background:rgba(212,162,76,.15);color:var(--gold);
+}
+
+/* ---------- Exercises ---------- */
+.exercise-grid{display:grid;grid-template-columns:1fr;gap:.9rem;}
+.exercise-card{cursor:pointer;}
+.exercise-card:active{transform:scale(.99);}
+.quiz-options{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-top:.9rem;}
+.quiz-options button{
+  background:var(--wood-dark);border:1px solid rgba(212,162,76,.3);
+  color:var(--cream);padding:.7rem;border-radius:10px;font-weight:600;cursor:pointer;font-size:.95rem;
+}
+.quiz-options button.correct{background:var(--ok);border-color:var(--ok);color:#08210f;}
+.quiz-options button.wrong{background:var(--bad);border-color:var(--bad);color:#2b0808;}
+.feedback{min-height:1.4em;font-weight:600;margin-top:.6rem;font-size:.9rem;}
+.progress-track{height:8px;border-radius:6px;background:var(--wood-dark);overflow:hidden;margin-top:.3rem;}
+.progress-fill{height:100%;background:var(--gold);width:0%;transition:width .3s ease;}
+
+footer{text-align:center;color:#8A7358;font-size:.8rem;padding:2rem 1rem 1rem;}
+
+@media (prefers-color-scheme:light){
+  :root{}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="logo">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M4 20L15 9" stroke="#D4A24C" stroke-width="2" stroke-linecap="round"/><circle cx="17" cy="7" r="3.2" stroke="#D4A24C" stroke-width="2"/><path d="M4 20l-1 1M6 18l1 1" stroke="#D4A24C" stroke-width="1.4" stroke-linecap="round"/></svg>
+    <h1>Braço Livre</h1>
+  </div>
+  <span class="muted" id="levelBadge">Iniciante</span>
+</header>
+
+<nav class="tabs">
+  <button data-view="afinador" class="active">Afinador</button>
+  <button data-view="trilha">Trilha</button>
+  <button data-view="exercicios">Exercícios</button>
+  <button data-view="sobre">Sobre</button>
+</nav>
+
+<main>
+
+  <!-- ===================== AFINADOR ===================== -->
+  <section class="view active" id="view-afinador">
+    <div class="card">
+      <h3>Afinador cromático</h3>
+      <p class="muted">Toque uma corda por vez perto do microfone. O app identifica a nota e mostra se está afinada, grave ou aguda.</p>
+      <div class="tuner-dial">
+        <div class="note-display"><span id="noteName">—</span><span class="oct" id="noteOct"></span></div>
+        <div class="meter">
+          <div class="center-line"></div>
+          <div class="needle" id="needle"></div>
+        </div>
+        <div class="cents-label" id="centsLabel">Aguardando som…</div>
+        <button class="tuner-btn" id="tunerToggle">🎙️ Ativar microfone</button>
+      </div>
+      <div class="string-row" id="stringRow"></div>
+    </div>
+
+    <div class="card">
+      <h3>Identificador de tons</h3>
+      <p class="muted">Enquanto o microfone estiver ativo, qualquer nota tocada é reconhecida em tempo real — útil para conferir improvisos ou identificar notas por ouvido.</p>
+      <div class="muted">Frequência detectada: <strong id="freqLabel">—</strong></div>
+    </div>
+  </section>
+
+  <!-- ===================== TRILHA ===================== -->
+  <section class="view" id="view-trilha">
+    <nav class="tabs" style="padding-left:0;padding-right:0;">
+      <button data-level="iniciante" class="active">Iniciante</button>
+      <button data-level="intermediario">Intermediário</button>
+      <button data-level="avancado">Avançado</button>
+    </nav>
+
+    <div class="card" id="levelIntro"></div>
+
+    <div class="card">
+      <span class="level-pill" id="lessonsPill">Módulos</span>
+      <div id="lessonList"></div>
+    </div>
+
+    <div class="card" id="fretboardCard">
+      <h3 id="fretboardTitle">Diagrama do braço</h3>
+      <div class="fret-wrap" id="fretboardHost"></div>
+    </div>
+  </section>
+
+  <!-- ===================== EXERCÍCIOS ===================== -->
+  <section class="view" id="view-exercicios">
+    <div class="card">
+      <h3>Reconheça a nota</h3>
+      <p class="muted">Veja a posição destacada no braço e escolha a nota correspondente. Repita para reforçar a memória.</p>
+      <div class="fret-wrap" id="quizFretHost"></div>
+      <div class="quiz-options" id="quizOptions"></div>
+      <div class="feedback" id="quizFeedback"></div>
+      <div class="progress-track"><div class="progress-fill" id="quizProgress"></div></div>
+      <p class="muted" id="quizScore" style="margin-top:.5rem;">Acertos: 0 / 0</p>
+    </div>
+
+    <div class="card">
+      <h3>Improviso guiado</h3>
+      <p class="muted">Escala pentatônica menor de Lá — use estas posições como base para improvisar. Toque livremente sobre uma base em Lá menor.</p>
+      <div class="fret-wrap" id="pentaFretHost"></div>
+    </div>
+  </section>
+
+  <!-- ===================== SOBRE ===================== -->
+  <section class="view" id="view-sobre">
+    <div class="card">
+      <h3>Sobre o Braço Livre</h3>
+      <p>Um app para aprender guitarra do zero ao improviso — cordas, escalas, harmonia e técnica de palhetada, com afinador embutido e exercícios visuais construídos para fixar memória muscular.</p>
+      <p class="muted">Instale este app na tela inicial do seu celular pelo menu do navegador (Adicionar à tela de início) para acesso rápido, como um aplicativo nativo.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer>Braço Livre — feito para quem quer tocar de verdade.</footer>
+
+<script>
+/* =========================================================
+   DADOS MUSICAIS
+========================================================= */
+const NOTE_NAMES = ['Dó','Dó#','Ré','Ré#','Mi','Fá','Fá#','Sol','Sol#','Lá','Lá#','Si'];
+const STRINGS = [ // afinação padrão, da mais grave à mais aguda
+  {name:'E', label:'Mi (6ª)', freq:82.41, color:'var(--e-low)', note:'Mi'},
+  {name:'A', label:'Lá (5ª)', freq:110.00, color:'var(--a)', note:'Lá'},
+  {name:'D', label:'Ré (4ª)', freq:146.83, color:'var(--d)', note:'Ré'},
+  {name:'G', label:'Sol (3ª)', freq:196.00, color:'var(--g)', note:'Sol'},
+  {name:'B', label:'Si (2ª)', freq:246.94, color:'var(--b)', note:'Si'},
+  {name:'E2', label:'Mi (1ª)', freq:329.63, color:'var(--e-high)', note:'Mi'},
+];
+const STRING_COLORS = ['var(--e-low)','var(--a)','var(--d)','var(--g)','var(--b)','var(--e-high)'];
+// Notas por casa em cada corda (0 = solta), casas 0-5
+const OPEN_MIDI = [40,45,50,55,59,64]; // E2 A2 D3 G3 B3 E4
+
+function midiToNote(m){ return NOTE_NAMES[((m%12)+12)%12]; }
+function midiToOctave(m){ return Math.floor(m/12)-1; }
+
+/* =========================================================
+   NAVEGAÇÃO
+========================================================= */
+document.querySelectorAll('nav.tabs > button[data-view]').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('nav.tabs > button[data-view]').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('section.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById('view-'+btn.dataset.view).classList.add('active');
+  });
+});
+
+/* =========================================================
+   AFINADOR — detecção de pitch por autocorrelação
+========================================================= */
+let audioCtx, analyser, mic, rafId, listening=false;
+const noteNameEl = document.getElementById('noteName');
+const noteOctEl = document.getElementById('noteOct');
+const needleEl = document.getElementById('needle');
+const centsLabelEl = document.getElementById('centsLabel');
+const freqLabelEl = document.getElementById('freqLabel');
+const toggleBtn = document.getElementById('tunerToggle');
+
+function autoCorrelate(buf, sampleRate){
+  const SIZE = buf.length;
+  let rms = 0;
+  for(let i=0;i<SIZE;i++){ rms += buf[i]*buf[i]; }
+  rms = Math.sqrt(rms/SIZE);
+  if(rms < 0.01) return -1; // silêncio
+
+  let r1=0, r2=SIZE-1, thres=0.2;
+  for(let i=0;i<SIZE/2;i++){ if(Math.abs(buf[i])<thres){ r1=i; break; } }
+  for(let i=1;i<SIZE/2;i++){ if(Math.abs(buf[SIZE-i])<thres){ r2=SIZE-i; break; } }
+  const trimmed = buf.slice(r1,r2);
+  const n = trimmed.length;
+
+  const c = new Array(n).fill(0);
+  for(let lag=0;lag<n;lag++){
+    for(let i=0;i<n-lag;i++){ c[lag] += trimmed[i]*trimmed[i+lag]; }
+  }
+  let d=0; while(c[d]>c[d+1]) d++;
+  let maxVal=-1, maxPos=-1;
+  for(let i=d;i<n;i++){ if(c[i]>maxVal){ maxVal=c[i]; maxPos=i; } }
+  let T0 = maxPos;
+  if(T0<=0) return -1;
+  // interpolação parabólica
+  const x1=c[T0-1]||c[T0], x2=c[T0], x3=c[T0+1]||c[T0];
+  const a=(x1+x3-2*x2)/2, b=(x3-x1)/2;
+  if(a) T0 = T0 - b/(2*a);
+  return sampleRate/T0;
+}
+
+function freqToMidi(f){ return 69 + 12*Math.log2(f/440); }
+
+function updateTuner(){
+  const buf = new Float32Array(analyser.fftSize);
+  analyser.getFloatTimeDomainData(buf);
+  const freq = autoCorrelate(buf, audioCtx.sampleRate);
+
+  if(freq === -1 || freq < 60 || freq > 1200){
+    centsLabelEl.textContent = 'Aguardando som…';
+    freqLabelEl.textContent = '—';
+  } else {
+    const midi = freqToMidi(freq);
+    const rounded = Math.round(midi);
+    const cents = Math.round((midi-rounded)*100);
+    noteNameEl.textContent = midiToNote(rounded);
+    noteOctEl.textContent = midiToOctave(rounded);
+    freqLabelEl.textContent = freq.toFixed(1)+' Hz';
+
+    const pct = Math.max(-50,Math.min(50,cents));
+    needleEl.style.left = (50 + pct).toFixed(1)+'%';
+    const inTune = Math.abs(cents) <= 5;
+    needleEl.classList.toggle('ok', inTune);
+    centsLabelEl.textContent = inTune ? 'Afinado ✓' : (cents>0 ? `Agudo (+${cents}¢)` : `Grave (${cents}¢)`);
+
+    highlightNearestString(freq);
+  }
+  rafId = requestAnimationFrame(updateTuner);
+}
+
+function highlightNearestString(freq){
+  let nearest=null, best=Infinity;
+  STRINGS.forEach((s,i)=>{
+    const diff = Math.abs(12*Math.log2(freq/s.freq));
+    if(diff<best){ best=diff; nearest=i; }
+  });
+  document.querySelectorAll('.string-chip').forEach((c,i)=>c.classList.toggle('active', i===nearest && best<3));
+}
+
+async function startTuner(){
+  try{
+    audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    const stream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
+    mic = audioCtx.createMediaStreamSource(stream);
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 2048;
+    mic.connect(analyser);
+    listening = true;
+    toggleBtn.textContent = '⏸️ Parar afinador';
+    toggleBtn.classList.add('listening');
+    updateTuner();
+  }catch(err){
+    centsLabelEl.textContent = 'Não foi possível acessar o microfone.';
+  }
+}
+function stopTuner(){
+  listening=false;
+  if(rafId) cancelAnimationFrame(rafId);
+  if(audioCtx) audioCtx.close();
+  toggleBtn.textContent = '🎙️ Ativar microfone';
+  toggleBtn.classList.remove('listening');
+  noteNameEl.textContent='—'; noteOctEl.textContent='';
+  centsLabelEl.textContent='Aguardando som…'; freqLabelEl.textContent='—';
+  needleEl.style.left='50%'; needleEl.classList.remove('ok');
+  document.querySelectorAll('.string-chip').forEach(c=>c.classList.remove('active'));
+}
+toggleBtn.addEventListener('click',()=> listening ? stopTuner() : startTuner());
+
+// chips de cordas
+const stringRow = document.getElementById('stringRow');
+STRINGS.forEach((s,i)=>{
+  const el=document.createElement('div');
+  el.className='string-chip';
+  el.style.background=s.color;
+  el.textContent=s.name.replace('2','');
+  el.title=s.label;
+  stringRow.appendChild(el);
+});
+
+/* =========================================================
+   DIAGRAMAS DE BRAÇO (SVG)
+========================================================= */
+function drawFretboard(hostId, {frets=5, markers=[], startFret=0, mobile=true}={}){
+  const host = document.getElementById(hostId);
+  const W = mobile ? 320 : 460, H = 170;
+  const left=30, right=W-14, top=22, bottom=H-18;
+  const stringGap=(bottom-top)/5;
+  const fretGap=(right-left)/frets;
+
+  let svg = `<svg class="fretboard" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">`;
+  // trastes
+  for(let f=0; f<=frets; f++){
+    const x = left + f*fretGap;
+    svg += `<line x1="${x}" y1="${top}" x2="${x}" y2="${bottom}" stroke="${f===0?'#D4A24C':'rgba(243,233,216,.35)'}" stroke-width="${f===0?4:1.5}"/>`;
+  }
+  // cordas (linha 0 = corda mais aguda no topo visualmente, mas vamos manter grave embaixo)
+  for(let s=0; s<6; s++){
+    const y = top + s*stringGap;
+    svg += `<line x1="${left}" y1="${y}" x2="${right}" y2="${y}" stroke="${STRING_COLORS[5-s]}" stroke-width="${1+s*0.3}" opacity="0.8"/>`;
+  }
+  // números de casas
+  for(let f=1; f<=frets; f++){
+    const x = left + (f-0.5)*fretGap;
+    svg += `<text x="${x}" y="${bottom+15}" font-size="10" fill="#C9B79A" text-anchor="middle">${f+startFret}</text>`;
+  }
+  // marcadores (dedos)
+  markers.forEach(m=>{
+    // m.string: 0=grave(E baixo) .. 5=aguda ; m.fret relativo (0..frets)
+    const y = top + (5-m.string)*stringGap;
+    const x = m.fret===0 ? left-14 : left + (m.fret-0.5)*fretGap;
+    const color = m.color || STRING_COLORS[m.string];
+    svg += `<circle cx="${x}" cy="${y}" r="9" fill="${color}" stroke="#1c110a" stroke-width="1"/>`;
+    if(m.label) svg += `<text x="${x}" y="${y+3.5}" font-size="9" fill="#1c110a" text-anchor="middle" font-weight="700">${m.label}</text>`;
+  });
+  svg += '</svg>';
+  host.innerHTML = svg;
+}
+
+/* =========================================================
+   TRILHA DE APRENDIZADO
+========================================================= */
+const LEVELS = {
+  iniciante:{
+    intro:'Comece pelo básico: conhecer o instrumento, segurar a palheta corretamente e tocar seus primeiros acordes.',
+    lessons:[
+      {t:'As seis cordas', d:'Nomes, grossura e afinação padrão (Mi-Lá-Ré-Sol-Si-Mi).'},
+      {t:'Postura e pega da palheta', d:'Ângulo, firmeza e movimento de pulso — não de braço.'},
+      {t:'Primeiros acordes abertos', d:'Mi menor, Lá menor, Dó maior, Sol maior.'},
+      {t:'Troca de acordes com ritmo', d:'Exercício de metrônomo lento para transições limpas.'},
+    ],
+    fretboard:{frets:4, markers:[
+      {string:0,fret:0,label:'E'},{string:1,fret:0,label:'A'},{string:2,fret:0,label:'D'},
+      {string:3,fret:0,label:'G'},{string:4,fret:0,label:'B'},{string:5,fret:0,label:'E'}
+    ]},
+    title:'Cordas soltas'
+  },
+  intermediario:{
+    intro:'Amplie o vocabulário: escalas maiores e pentatônicas, cifras com pestana e noções de ritmo mais avançado.',
+    lessons:[
+      {t:'Escala maior — uma oitava', d:'Padrão de tons e semitons na corda Lá.'},
+      {t:'Pentatônica menor', d:'A posição mais usada para solos e riffs.'},
+      {t:'Acordes com pestana', d:'Fá maior e Si menor na 1ª e 2ª casa.'},
+      {t:'Palhetada alternada', d:'Down-up constante, mesmo em trocas de corda.'},
+    ],
+    fretboard:{frets:5, startFret:0, markers:[
+      {string:0,fret:5},{string:0,fret:8},{string:1,fret:5},{string:1,fret:7},
+      {string:2,fret:5},{string:2,fret:7},{string:3,fret:5},{string:3,fret:7},
+      {string:4,fret:5},{string:4,fret:8},{string:5,fret:5},{string:5,fret:8}
+    ]},
+    title:'Pentatônica menor de Lá (5ª casa)'
+  },
+  avancado:{
+    intro:'Domine harmonia funcional, modos e improvisação real sobre progressões de acordes.',
+    lessons:[
+      {t:'Campo harmônico maior', d:'Como cada grau gera um acorde e sua função (T, SD, D).'},
+      {t:'Modos gregos na prática', d:'Dórico e mixolídio aplicados sobre backing tracks.'},
+      {t:'Improviso guiado por arpejos', d:'Trocar de arpejo a cada mudança de acorde.'},
+      {t:'Economy picking', d:'Combinar palhetada alternada e varredura para fluidez.'},
+    ],
+    fretboard:{frets:5, startFret:4, markers:[
+      {string:1,fret:1},{string:1,fret:4},{string:2,fret:1},{string:2,fret:3},
+      {string:3,fret:1},{string:3,fret:3},{string:4,fret:1},{string:4,fret:4},{string:5,fret:1}
+    ]},
+    title:'Arpejo de Ré menor (9ª casa)'
+  }
+};
+
+function renderLevel(key){
+  const L = LEVELS[key];
+  document.getElementById('levelIntro').innerHTML = `<h3>Trilha ${key.charAt(0).toUpperCase()+key.slice(1)}</h3><p class="muted">${L.intro}</p>`;
+  document.getElementById('levelBadge').textContent = key.charAt(0).toUpperCase()+key.slice(1);
+  const list = document.getElementById('lessonList');
+  list.innerHTML = '';
+  L.lessons.forEach((les,i)=>{
+    const row = document.createElement('div');
+    row.className='lesson';
+    row.innerHTML = `<div class="num">${i+1}</div><div class="body"><strong>${les.t}</strong><span class="muted">${les.d}</span></div>`;
+    list.appendChild(row);
+  });
+  document.getElementById('fretboardTitle').textContent = L.title;
+  drawFretboard('fretboardHost', L.fretboard);
+}
+document.querySelectorAll('#view-trilha nav.tabs > button[data-level]').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('#view-trilha nav.tabs > button[data-level]').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderLevel(btn.dataset.level);
+  });
+});
+renderLevel('iniciante');
+
+/* =========================================================
+   EXERCÍCIO — RECONHEÇA A NOTA
+========================================================= */
+let quizCorrect=0, quizTotal=0, quizCurrent=null;
+const quizFeedback = document.getElementById('quizFeedback');
+const quizOptionsEl = document.getElementById('quizOptions');
+const quizScoreEl = document.getElementById('quizScore');
+const quizProgressEl = document.getElementById('quizProgress');
+
+function newQuizQuestion(){
+  quizFeedback.textContent='';
+  const stringIdx = Math.floor(Math.random()*6); // 0..5, 0=grave
+  const fret = Math.floor(Math.random()*8);
+  const midi = OPEN_MIDI[stringIdx] + fret;
+  const correctNote = midiToNote(midi);
+  quizCurrent = {stringIdx, fret, correctNote};
+
+  drawFretboard('quizFretHost', {frets:8, markers:[{string:stringIdx, fret:fret, color:'var(--gold)'}]});
+
+  const options = new Set([correctNote]);
+  while(options.size<4){ options.add(NOTE_NAMES[Math.floor(Math.random()*12)]); }
+  const arr = [...options].sort(()=>Math.random()-0.5);
+
+  quizOptionsEl.innerHTML='';
+  arr.forEach(opt=>{
+    const b=document.createElement('button');
+    b.textContent=opt;
+    b.addEventListener('click',()=>answerQuiz(opt,b));
+    quizOptionsEl.appendChild(b);
+  });
+}
+function answerQuiz(opt, btnEl){
+  quizTotal++;
+  const isCorrect = opt===quizCurrent.correctNote;
+  if(isCorrect){ quizCorrect++; btnEl.classList.add('correct'); quizFeedback.textContent='Isso aí! 🎸'; }
+  else{
+    btnEl.classList.add('wrong');
+    quizFeedback.textContent = `Era ${quizCurrent.correctNote}. Tente a próxima!`;
+    [...quizOptionsEl.children].forEach(b=>{ if(b.textContent===quizCurrent.correctNote) b.classList.add('correct'); });
+  }
+  quizScoreEl.textContent = `Acertos: ${quizCorrect} / ${quizTotal}`;
+  quizProgressEl.style.width = Math.round((quizCorrect/Math.max(1,quizTotal))*100)+'%';
+  [...quizOptionsEl.children].forEach(b=>b.disabled=true);
+  setTimeout(newQuizQuestion, 1100);
+}
+newQuizQuestion();
+
+/* Diagrama fixo do improviso guiado */
+drawFretboard('pentaFretHost', {frets:5, startFret:4, markers:[
+  {string:0,fret:1},{string:0,fret:4},{string:1,fret:1},{string:1,fret:3},
+  {string:2,fret:1},{string:2,fret:3},{string:3,fret:1},{string:3,fret:3},
+  {string:4,fret:1},{string:4,fret:4},{string:5,fret:1},{string:5,fret:4}
+]});
+
+/* =========================================================
+   SERVICE WORKER
+========================================================= */
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>

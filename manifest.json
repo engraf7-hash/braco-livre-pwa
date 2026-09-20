@@ -1,0 +1,32 @@
+{
+  "name": "Braço Livre — Aprenda Guitarra",
+  "short_name": "Braço Livre",
+  "description": "App de ensino de guitarra com afinador, identificador de notas, trilhas por nível e exercícios visuais.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#2B1B12",
+  "theme_color": "#2B1B12",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
